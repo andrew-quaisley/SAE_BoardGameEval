@@ -49,7 +49,7 @@ class Config:
     othello_functions = [
         othello_utils.games_batch_to_state_stack_mine_yours_BLRRC,
         othello_utils.games_batch_to_state_stack_mine_yours_blank_mask_BLRRC,
-        othello_utils.games_batch_to_valid_moves_BLRRC,
+        # othello_utils.games_batch_to_valid_moves_BLRRC,
         # othello_utils.games_batch_to_state_stack_lines_mine_BLRCC,
         # othello_utils.games_batch_to_state_stack_length_lines_mine_BLRCC,
         # othello_utils.games_batch_to_state_stack_opponent_length_lines_mine_BLRCC,

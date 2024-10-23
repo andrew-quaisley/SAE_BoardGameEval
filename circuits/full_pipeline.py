@@ -557,5 +557,7 @@ if __name__ == "__main__":
     # main_config.eval_sae_n_inputs = 1000
     # main_config.N_GPUS = 1
 
+    main_config.chess_functions = []
+
     for group_path, output_path in all_groups:
         analyze_sae_groups(group_path, output_path, main_config)
