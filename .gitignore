@@ -6,6 +6,7 @@ wandb/
 **.sh
 **.pkl
 autoencoders/*
+venv/*
 
 !autoencoders/README.md
 !autoencoders/fix_ae_device.ipynb
