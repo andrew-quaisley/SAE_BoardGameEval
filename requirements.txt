@@ -6,6 +6,9 @@ jaxtyping==0.2.28
 # For OthelloGPT
 transformer_lens==1.17.0
 
+# missing necessary package
+joblib
+
 # If running into dependency issues, these exact versions worked on Python 3.11
 
 # datasets == 2.18.0
