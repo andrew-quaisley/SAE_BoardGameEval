@@ -27,6 +27,21 @@ def best_f1_average(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch
 
     return f1_T
 
+def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor:
+    """Computes coverage from f1 scores as defined in paper."""
+    f1_RRC, _ = torch.amax(f1_TFRRC, dim=(0,1))
+
+    R1, R2, C = f1_RRC.shape
+
+    if config.one_hot_mask_idx is not None:
+        C -= 1
+
+    max_possible = R1 * R2 * C
+
+    coverage = torch.sum(f1_RRC) / max_possible
+
+    return coverage
+
 
 def best_f1_per_threshold(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor:
     """Find the best threshold for every square, then find the best F1 score across all features for every square.
@@ -189,6 +204,10 @@ def calculate_all_sae_coverage(
                     custom_function in custom_functions
                 ), f"Key {custom_function} not in custom_functions"
                 f1_TFRRC = f1_dict_TFRRC[func_name]
+
+                #compute coverage based on definition in paper - AQ
+                cov = coverage(f1_TFRRC, config)
+                sae_results[autoencoder_path][f"{func_name}_coverage"] = cov
 
                 average_f1_T = best_f1_average(f1_TFRRC, config)
                 sae_results[autoencoder_path][f"{func_name}_average_f1"] = average_f1_T
