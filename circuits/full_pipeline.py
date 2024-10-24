@@ -567,3 +567,5 @@ if __name__ == "__main__":
         for key in results_dict.keys():
             if key[-len("_best_average_f1"):-1] == "_best_average_f1":
                 print(f"{key}: {results_dict[key]}")
+            if "coverage" in key:
+                print(f"{key}: {results_dict[key]}")
