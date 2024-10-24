@@ -497,10 +497,10 @@ othello_output_path = "autoencoders/othello-trained_model-layer_5-2024-05-23/res
 # othello_random_output_path = "autoencoders/othello-random_model-layer_5-standard/results.csv"
 
 chess_group_paths = [
-    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated",
-    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated_anneal",
-    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-p_anneal",
-    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-standard",
+    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated",
+    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated_anneal",
+    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-p_anneal",
+    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-standard/",
 ]
 chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results.csv"
 
