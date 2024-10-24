@@ -534,9 +534,10 @@ chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results
 #     (chess_all_layers_group_paths, chess_all_layers_output_path),
 # ]
 
-all_groups = [(chess_group_paths, chess_output_path), (othello_group_paths, othello_output_path)]
+all_groups = [# (chess_group_paths, chess_output_path), 
+              (othello_group_paths, othello_output_path)]
 
-othello_test_path = ["autoencoders/testing_othello/"]
+""" othello_test_path = ["autoencoders/testing_othello/"]
 othello_test_output_path = "autoencoders/testing_othello/results.csv"
 
 chess_test_path = ["autoencoders/testing_chess/"]
@@ -545,7 +546,7 @@ chess_test_output_path = "autoencoders/testing_chess/results.csv"
 all_groups = [
     (chess_test_path, chess_test_output_path),
     (othello_test_path, othello_test_output_path),
-]
+] """
 
 # othello_groups = [(othello_test_path, othello_test_output_path)]
 # chess_groups = [(chess_test_path, chess_test_output_path)]
@@ -557,7 +558,12 @@ if __name__ == "__main__":
     # main_config.eval_sae_n_inputs = 1000
     # main_config.N_GPUS = 1
 
-    main_config.chess_functions = []
-
     for group_path, output_path in all_groups:
         analyze_sae_groups(group_path, output_path, main_config)
+
+        f1_output_path = output_path.replace("results.csv", "f1_results.csv")
+        df = pd.read_csv(f1_output_path)
+        results_dict = df.to_dict()
+        for key in results_dict.keys():
+            if key[-len("_best_average_f1"):-1] == "_best_average_f1":
+                print(f"{key}: {results_dict[key]}")

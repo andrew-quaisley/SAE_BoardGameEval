@@ -13,7 +13,7 @@ wget -O othello-trained_model-layer_5-2024-05-23.zip "https://huggingface.co/ada
 unzip othello-trained_model-layer_5-2024-05-23.zip
 rm othello-trained_model-layer_5-2024-05-23.zip
 
-wget -O chess-trained_model-layer_5-2024-05-23.zip "https://huggingface.co/adamkarvonen/chess_saes/resolve/main/chess-trained_model-layer_5-2024-05-23.zip?download=true"
+#wget -O chess-trained_model-layer_5-2024-05-23.zip "https://huggingface.co/adamkarvonen/chess_saes/resolve/main/chess-trained_model-layer_5-2024-05-23.zip?download=true"
 
-unzip chess-trained_model-layer_5-2024-05-23.zip
-rm chess-trained_model-layer_5-2024-05-23.zip
+#unzip chess-trained_model-layer_5-2024-05-23.zip
+#rm chess-trained_model-layer_5-2024-05-23.zip
