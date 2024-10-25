@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Callable
 import torch
 import os
+import json
 
 import circuits.eval_sae_as_classifier as eval_sae
 import circuits.analysis as analysis
@@ -497,9 +498,9 @@ othello_output_path = "autoencoders/othello-trained_model-layer_5-2024-05-23/res
 # othello_random_output_path = "autoencoders/othello-random_model-layer_5-standard/results.csv"
 
 chess_group_paths = [
-    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated",
-    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated_anneal",
-    #"autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-p_anneal",
+    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated",
+    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-gated_anneal",
+    "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-p_anneal",
     "autoencoders/chess-trained_model-layer_5-2024-05-23/chess-trained_model-layer_5-standard/",
 ]
 chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results.csv"
@@ -558,14 +559,18 @@ if __name__ == "__main__":
     # main_config.eval_sae_n_inputs = 1000
     # main_config.N_GPUS = 1
 
+    results_filename_filter = str(main_config.eval_sae_n_inputs) + "_"
+    f1_analysis_thresholds = main_config.f1_analysis_thresholds.tolist()
     for group_path, output_path in all_groups:
-        analyze_sae_groups(group_path, output_path, main_config)
+        #analyze_sae_groups(group_path, output_path, main_config)
+        f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, "cuda:0", f1_analysis_thresholds)
 
-        f1_output_path = output_path.replace("results.csv", "f1_results.csv")
-        df = pd.read_csv(f1_output_path)
-        results_dict = df.to_dict()
-        for key in results_dict.keys():
-            if key[-len("_best_average_f1"):-1] == "_best_average_f1":
-                print(f"{key}: {results_dict[key]}")
-            if "coverage" in key:
-                print(f"{key}: {results_dict[key]}")
+    f1_output_path = output_path.replace("results.csv", "f1_results.csv")
+    df = pd.read_csv(f1_output_path)
+    results_dict = df.to_dict()
+    coverage_results = {}
+    for key in results_dict.keys():
+        if key[-len("_best_average_f1"):] == "_best_average_f1" or "coverage" in key:
+            coverage_results[key] = results_dict[key]
+    print(coverage_results)
+    json.dump(coverage_results, output_path.replace("results.csv", "coverage_results.json"))
