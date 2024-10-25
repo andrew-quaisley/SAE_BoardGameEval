@@ -559,12 +559,12 @@ if __name__ == "__main__":
     # main_config.eval_sae_n_inputs = 1000
     # main_config.N_GPUS = 1
 
-    results_filename_filter = str(main_config.eval_sae_n_inputs) + "_"
+    """ results_filename_filter = str(main_config.eval_sae_n_inputs) + "_"
     f1_analysis_thresholds = main_config.f1_analysis_thresholds.tolist()
     for group_path, output_path in all_groups:
         #analyze_sae_groups(group_path, output_path, main_config)
         f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, "cuda:0", f1_analysis_thresholds)
-
+ """
     f1_output_path = output_path.replace("results.csv", "f1_results.csv")
     df = pd.read_csv(f1_output_path)
     results_dict = df.to_dict()
@@ -573,4 +573,5 @@ if __name__ == "__main__":
         if key[-len("_best_average_f1"):] == "_best_average_f1" or "coverage" in key:
             coverage_results[key] = results_dict[key]
     print(coverage_results)
-    json.dump(coverage_results, output_path.replace("results.csv", "coverage_results.json"))
+    with open(output_path.replace("results.csv", "coverage_results.json"), "w") as f:
+        json.dump(coverage_results, f)
