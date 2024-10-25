@@ -485,12 +485,12 @@ def analyze_sae_groups(
 # By default, at the bottom of this file, we have a test configuration that will run on the testing SAEs.
 
 othello_group_paths = [
-    "autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated",
-    "autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated_anneal",
-    "autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-p_anneal",
-    "autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-standard",
+    "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated",
+    "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated_anneal",
+    "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-p_anneal",
+    "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-standard",
 ]
-othello_output_path = "autoencoders/othello-trained_model-layer_5-2024-05-23/results.csv"
+othello_output_path = "../autoencoders/othello-trained_model-layer_5-2024-05-23/results.csv"
 
 # othello_random_group_paths = [
 #     "autoencoders/othello-random_model-layer_5-standard",
