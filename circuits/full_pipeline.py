@@ -565,6 +565,7 @@ if __name__ == "__main__":
         #analyze_sae_groups(group_path, output_path, main_config)
         f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, "cuda:0", f1_analysis_thresholds)
  """
+    output_path = all_groups[0][1]
     f1_output_path = output_path.replace("results.csv", "f1_results.csv")
     df = pd.read_csv(f1_output_path)
     results_dict = df.to_dict()
