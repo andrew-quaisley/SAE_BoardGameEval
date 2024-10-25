@@ -6,7 +6,7 @@ jaxtyping==0.2.28
 # For OthelloGPT
 transformer_lens==1.17.0
 
-# missing necessary
+# missing necessary package
 joblib
 
 # not version specific
