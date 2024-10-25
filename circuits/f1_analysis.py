@@ -153,8 +153,7 @@ def calculate_all_sae_coverage(
         for autoencoder_path in folders:
 
             print(f"Processing {autoencoder_path}")
-
-            print(df["autoencoder_path"].values) 
+            
             assert (
                 autoencoder_path in df["autoencoder_path"].values
             ), f"{autoencoder_path} not in csv file"
