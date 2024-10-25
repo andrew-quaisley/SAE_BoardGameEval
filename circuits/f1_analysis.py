@@ -29,7 +29,7 @@ def best_f1_average(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch
 
 def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor:
     """Computes coverage from f1 scores as defined in paper."""
-    f1_RRC, _ = torch.amax(f1_TFRRC, dim=(0,1))
+    f1_RRC = torch.amax(f1_TFRRC, dim=(0,1))
 
     R1, R2, C = f1_RRC.shape
 
@@ -153,7 +153,7 @@ def calculate_all_sae_coverage(
         for autoencoder_path in folders:
 
             print(f"Processing {autoencoder_path}")
-            
+
             assert (
                 autoencoder_path in df["autoencoder_path"].values
             ), f"{autoencoder_path} not in csv file"
