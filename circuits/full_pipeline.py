@@ -573,6 +573,6 @@ if __name__ == "__main__":
     for key in results_dict.keys():
         if key[-len("_best_average_f1"):] == "_best_average_f1" or "coverage" in key:
             coverage_results[key] = results_dict[key]
-    print(coverage_results)
+    print(coverage_results.keys())
     with open(output_path.replace("results.csv", "coverage_results.json"), "w") as f:
         json.dump(coverage_results, f)
