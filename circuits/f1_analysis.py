@@ -251,7 +251,7 @@ def update_dataframe_with_coverage_results(
                 results[f"{func_name}_all_average_f1s"] = json.dumps(f1_T.tolist())
 
                 cov = all_sae_results[autoencoder_group_path][autoencoder_path][f"{func_name}_coverage"]
-                results[f"{func_name}_coverage"] = cov
+                results[f"{func_name}_coverage"] = cov.item()
 
                 for threshold in thresholds:
                     threshold_column, threshold_normalized_column = get_threshold_column_names(
