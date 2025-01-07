@@ -562,7 +562,7 @@ if __name__ == "__main__":
     results_filename_filter = str(main_config.eval_sae_n_inputs) + "_"
     f1_analysis_thresholds = main_config.f1_analysis_thresholds.tolist()
     for group_path, output_path in all_groups:
-        #analyze_sae_groups(group_path, output_path, main_config)
+        analyze_sae_groups(group_path, output_path, main_config)
         f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, "cuda:0", f1_analysis_thresholds)
 
     output_path = all_groups[0][1]
