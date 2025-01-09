@@ -32,6 +32,9 @@ from circuits.dictionary_learning.trainers.p_anneal import PAnnealTrainer
 from circuits.dictionary_learning.trainers.standard import StandardTrainer
 from circuits.dictionary_learning.trainers.top_k import AutoEncoderTopK, TrainerTopK
 
+from huben_saes.sae_template import SAETemplate
+from huben_saes.architectures import SAEAnthropic
+from huben_saes.huben_sae import HubenSAE
 
 @dataclass
 class AutoEncoderBundle:
@@ -143,44 +146,57 @@ def get_ae_bundle(
     n_ctxs: int = 512,
     include_buffer: bool = True,
 ) -> AutoEncoderBundle:
-    autoencoder_model_path = f"{autoencoder_path}ae.pt"
-    autoencoder_config_path = f"{autoencoder_path}config.json"
-
-    with open(autoencoder_config_path, "r") as f:
-        config = json.load(f)
-
-    use_identity_dict = False
-
-    if "dict_class" in config["trainer"]:
-        if config["trainer"]["dict_class"] == "Identity":
-            use_identity_dict = True
-
-    if use_identity_dict:
-        ae = get_identity_autoencoder(config)
+    if "huben" in autoencoder_path:
+        huben = True
     else:
-        config_args = []
-        for k, v in config["trainer"].items():
-            if k not in ["trainer_class", "sparsity_penalty"]:
-                if not (config["trainer"]["trainer_class"] == "TrainerTopK" and k == "lr"):
-                    if isinstance(v, str) and k != "dict_class":
-                        config_args.append(k + "=" + "'" + v + "'")
-                    else:
-                        config_args.append(k + "=" + str(v))
-        config_str = ", ".join(config_args)
+        huben = False
 
-        # rangell: this is a super hacky way to get the correct dictionary class from the config
-        ae_class = eval(config["trainer"]["trainer_class"] + f"({config_str})").ae.__class__
-        if ae_class == AutoEncoderTopK:
-            ae = ae_class.from_pretrained(
-                autoencoder_model_path, k=config["trainer"]["k"], device=device
-            )
+    if huben:
+        autoencoder_model_path = autoencoder_path + os.listdir(autoencoder_path)[0]
+
+        ae = HubenSAE(autoencoder_model_path).to(device)
+
+        model_name = "Baidicoot/Othello-GPT-Transformer-Lens"
+        layer = 3
+    else:
+        autoencoder_model_path = f"{autoencoder_path}ae.pt"
+        autoencoder_config_path = f"{autoencoder_path}config.json"
+    
+        use_identity_dict = False
+
+        with open(autoencoder_config_path, "r") as f:
+            config = json.load(f)
+
+        if "dict_class" in config["trainer"]:
+            if config["trainer"]["dict_class"] == "Identity":
+                use_identity_dict = True
+
+        if use_identity_dict:
+            ae = get_identity_autoencoder(config)
         else:
-            ae = ae_class.from_pretrained(autoencoder_model_path, device=device)
-        ae = ae.to(device)
+            config_args = []
+            for k, v in config["trainer"].items():
+                if k not in ["trainer_class", "sparsity_penalty"]:
+                    if not (config["trainer"]["trainer_class"] == "TrainerTopK" and k == "lr"):
+                        if isinstance(v, str) and k != "dict_class":
+                            config_args.append(k + "=" + "'" + v + "'")
+                        else:
+                            config_args.append(k + "=" + str(v))
+            config_str = ", ".join(config_args)
 
-    model_name = config["trainer"]["lm_name"]
+            # rangell: this is a super hacky way to get the correct dictionary class from the config
+            ae_class = eval(config["trainer"]["trainer_class"] + f"({config_str})").ae.__class__
+            if ae_class == AutoEncoderTopK:
+                ae = ae_class.from_pretrained(
+                    autoencoder_model_path, k=config["trainer"]["k"], device=device
+                )
+            else:
+                ae = ae_class.from_pretrained(autoencoder_model_path, device=device)
+            ae = ae.to(device)
 
-    layer = config["trainer"]["layer"]
+        model_name = config["trainer"]["lm_name"]
+
+        layer = config["trainer"]["layer"]
 
     # The following commented lines are for some legacy autoencoders
     # that don't have the layer specified in the config file.
@@ -388,13 +404,17 @@ def get_feature_activations_batch(
 def get_nested_folders(path: str) -> list[str]:
     """Get a list of folders nested one level deep in the given path which contain an ae.pt file"""
     folder_names = []
+    if "huben" in path:
+        huben = True
+    else:
+        huben = False
     # Process current directory and one level deep subdirectories
     for folder in os.listdir(path):
         if folder == "utils":
             continue
         current_folder = os.path.join(path, folder)
         if os.path.isdir(current_folder):
-            if "ae.pt" in os.listdir(current_folder):
+            if "ae.pt" in os.listdir(current_folder) or huben:
                 folder_names.append(current_folder + "/")
             for subfolder in os.listdir(current_folder):  # Process subfolders
                 subfolder_path = os.path.join(current_folder, subfolder)

@@ -214,7 +214,15 @@ def analyze_sae_groups(
 ):
     RESOURCE_STACK = deque([f"cuda:{i}" for i in range(config.N_GPUS)])
 
-    othello = check_all_sae_groups(autoencoder_group_paths)
+    if "huben" in autoencoder_group_paths[0]:
+        huben = True
+    else:
+        huben = False
+
+    if huben:
+        othello=True
+    else:
+        othello = check_all_sae_groups(autoencoder_group_paths)
 
     dataset_size = max(config.eval_sae_n_inputs, config.board_reconstruction_n_inputs)
 
@@ -288,10 +296,11 @@ def analyze_sae_groups(
     del device
 
     for autoencoder_group_path in autoencoder_group_paths:
-        new_othello = eval_sae.check_if_autoencoder_is_othello(autoencoder_group_path)
-        assert (
-            new_othello == othello
-        ), "All autoencoders in a group must be trained on the same game"
+        if not huben:
+            new_othello = eval_sae.check_if_autoencoder_is_othello(autoencoder_group_path)
+            assert (
+                new_othello == othello
+            ), "All autoencoders in a group must be trained on the same game"
 
         folders = eval_sae.get_nested_folders(autoencoder_group_path)
 
@@ -484,13 +493,17 @@ def analyze_sae_groups(
 # Then, uncomment the desired group_paths and output_path variables below.
 # By default, at the bottom of this file, we have a test configuration that will run on the testing SAEs.
 
-othello_group_paths = [
+""" othello_group_paths = [
     "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated",
     "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-gated_anneal",
     "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-p_anneal",
     "../autoencoders/othello-trained_model-layer_5-2024-05-23/othello-trained_model-layer_5-standard",
-]
-othello_output_path = "../autoencoders/othello-trained_model-layer_5-2024-05-23/results.csv"
+] """
+othello_group_paths = ["autoencoders/othello-trained_model-layer_5-2024-05-23"]
+othello_output_path = "autoencoders/othello-trained_model-layer_5-2024-05-23/results.csv"
+
+huben_othello_group_paths = ["huben_saes/trained_saes"]
+huben_othello_output_path = "huben_saes/trained_saes/results.csv"
 
 # othello_random_group_paths = [
 #     "autoencoders/othello-random_model-layer_5-standard",
@@ -535,8 +548,9 @@ chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results
 #     (chess_all_layers_group_paths, chess_all_layers_output_path),
 # ]
 
-all_groups = [# (chess_group_paths, chess_output_path), 
-              (othello_group_paths, othello_output_path)]
+all_groups = [#(chess_group_paths, chess_output_path),
+              #(othello_group_paths, othello_output_path),
+              (huben_othello_group_paths, huben_othello_output_path)]
 
 """ othello_test_path = ["autoencoders/testing_othello/"]
 othello_test_output_path = "autoencoders/testing_othello/results.csv"
@@ -573,6 +587,5 @@ if __name__ == "__main__":
     for key in results_dict.keys():
         if key[-len("_best_average_f1"):] == "_best_average_f1" or "coverage" in key:
             coverage_results[key] = results_dict[key]
-            print(key)
     with open(output_path.replace("results.csv", "coverage_results.json"), "w") as f:
         json.dump(coverage_results, f)

@@ -515,9 +515,15 @@ def aggregate_statistics(
                 device,
             )
 
-    autoencoder_config_path = f"{autoencoder_path}config.json"
-    with open(autoencoder_config_path, "r") as f:
-        trainer_config = json.load(f)
+    if "huben" in autoencoder_path:
+        results["trainer_class"] = f"Huben_{autoencoder_path.split("/")}"
+        results["sae_class"] = f"Huben_{autoencoder_path.split("/")}"
+    else:
+        autoencoder_config_path = f"{autoencoder_path}config.json"
+        with open(autoencoder_config_path, "r") as f:
+            trainer_config = json.load(f)
+        results["trainer_class"] = trainer_config["trainer"]["trainer_class"]
+        results["sae_class"] = ae_bundle.ae._get_name()
 
     hyperparameters = {
         "n_inputs": n_inputs,
@@ -526,8 +532,6 @@ def aggregate_statistics(
         "indexing_function": indexing_function_name,
     }
     results["hyperparameters"] = hyperparameters
-    results["trainer_class"] = trainer_config["trainer"]["trainer_class"]
-    results["sae_class"] = ae_bundle.ae._get_name()
 
     output_location = get_output_location(autoencoder_path, n_inputs, indexing_function)
 

@@ -4,6 +4,7 @@ import logging
 import numpy as np
 from .sae_template import SAETemplate
 
+
 logger = logging.getLogger(__name__)
 device='cuda' if torch.cuda.is_available() else 'cpu'
 
