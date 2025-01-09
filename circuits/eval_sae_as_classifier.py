@@ -516,8 +516,8 @@ def aggregate_statistics(
             )
 
     if "huben" in autoencoder_path:
-        results["trainer_class"] = f"Huben_{autoencoder_path.split("/")}"
-        results["sae_class"] = f"Huben_{autoencoder_path.split("/")}"
+        results["trainer_class"] = f"Huben_{autoencoder_path.split("/")[-1][-4:]}"
+        results["sae_class"] = f"Huben_{autoencoder_path.split("/")[-1][-4:]}"
     else:
         autoencoder_config_path = f"{autoencoder_path}config.json"
         with open(autoencoder_config_path, "r") as f:
