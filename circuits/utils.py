@@ -239,7 +239,10 @@ def get_ae_bundle(
 
     submodule = get_submodule(model_name, layer, model, submodule_type)
 
-    context_length = config["buffer"]["ctx_len"]
+    if huben:
+        context_length = 59
+    else:
+        context_length = config["buffer"]["ctx_len"]
 
     if include_buffer:
         buffer = NNsightActivationBuffer(
