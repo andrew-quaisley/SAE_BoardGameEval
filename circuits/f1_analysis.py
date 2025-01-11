@@ -34,7 +34,7 @@ def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor
         have potentially been thrown out already, if the custom function is a "blank_mask" version)."""
     
     #special case for othello so that I can keep best_f1_average giving the same (incorrect) results for comparison
-    if "othello" in config.custom_board_state_function.__name__ and "blank_mask" in config.custom_board_state_function.__name__:
+    if "blank_mask" in config.custom_board_state_function.__name__:
         f1_TFRRC = f1_TFRRC[:,:,:,:, [0, 2]]
     elif config.one_hot_mask_idx is not None:
         #Throw away empty class
