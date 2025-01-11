@@ -775,6 +775,7 @@ othello_mine_yours_blank_mask_config = Config(
     custom_board_state_function=othello_utils.games_batch_to_state_stack_mine_yours_blank_mask_BLRRC,
     num_rows=8,
     num_cols=8,
+    #Fix: one_hot_mask_idx=1
 )
 
 othello_valid_moves_config = Config(

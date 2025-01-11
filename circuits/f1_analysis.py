@@ -28,13 +28,21 @@ def best_f1_average(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch
     return f1_T
 
 def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor:
-    """Computes coverage from f1 scores as defined in paper."""
+    """Computes coverage from f1 scores as defined in paper (except that all positions that are empty
+        have potentially been thrown out already, if the custom function is a "blank_mask" version)."""
+    
+    #special case for othello so that I can keep best_f1_average giving the same (incorrect) results for comparison
+    if "othello" in config.custom_board_state_function.__name__ and "blank_mask" in config.custom_board_state_function.__name__:
+        f1_TFRRC = f1_TFRRC[:,:,:,:, [0, 2]]
+    elif config.one_hot_mask_idx is not None:
+        #Throw away empty class
+        classes = torch.arange(config.max_val - config.min_val + 1)
+        classes_to_keep = classes!=config.one_hot_mask_idx 
+        f1_TFRRC = f1_TFRRC[:,:,:,:, classes_to_keep]
+
     f1_RRC = torch.amax(f1_TFRRC, dim=(0,1))
 
     R1, R2, C = f1_RRC.shape
-
-    if config.one_hot_mask_idx is not None:
-        C -= 1
 
     max_possible = R1 * R2 * C
 
