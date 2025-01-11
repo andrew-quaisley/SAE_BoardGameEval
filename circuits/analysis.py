@@ -72,6 +72,10 @@ def get_all_f1s(results: dict, device: str) -> dict:
         func_name = custom_function.__name__
         on_counts_TFRRC = results[func_name]["on"]
         off_counts_TFRRC = results[func_name]["off"]
+
+        empty_true_positives_count= on_counts_TFRRC[:,:,:,:,1].sum()
+        print(f"Total true positives for empty class for {func_name}: {empty_true_positives_count}")
+
         f1_TFRRC = get_F1_per_feature(
             on_counts_TFRRC, on_counts_TF, off_counts_TFRRC, off_counts_TF
         )
@@ -115,6 +119,8 @@ def get_F1_per_feature(
     )
     recall_TFRRC = true_positives_TFRRC / (true_positives_TFRRC + false_negatives_TFRRC + epsilon)
     f1_TFRRC = 2 * (precision_TFRRC * recall_TFRRC) / (precision_TFRRC + recall_TFRRC + epsilon)
+    empty_f1_sum = f1_TFRRC[:,:,:,:,1].sum()
+    print(f"Sum of f1s for empty class: {empty_f1_sum}.")
 
     assert torch.all(precision_TFRRC >= 0)
     assert torch.all(precision_TFRRC <= 1)

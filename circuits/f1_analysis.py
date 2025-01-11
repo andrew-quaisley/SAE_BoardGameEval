@@ -21,6 +21,8 @@ def best_f1_average(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch
     if config.one_hot_mask_idx is not None:
         C -= 1
 
+    print(f"Number of classes used to calculate f1 average for {config.custom_board_state_function.__name__}: {C}")
+
     max_possible = R1 * R2 * C
 
     f1_T = einops.reduce(f1_TRRC, "T R1 R2 C -> T", "sum") / max_possible
@@ -43,6 +45,8 @@ def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor
     f1_RRC = torch.amax(f1_TFRRC, dim=(0,1))
 
     R1, R2, C = f1_RRC.shape
+    
+    print(f"Number of classes used to calculate coverage for {config.custom_board_state_function.__name__}: {C}")
 
     max_possible = R1 * R2 * C
 

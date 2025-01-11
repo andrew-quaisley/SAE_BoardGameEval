@@ -549,7 +549,7 @@ chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results
 # ]
 
 all_groups = [#(chess_group_paths, chess_output_path),
-              #(othello_group_paths, othello_output_path),
+              (othello_group_paths, othello_output_path),
               (huben_othello_group_paths, huben_othello_output_path)]
 
 """ othello_test_path = ["autoencoders/testing_othello/"]
