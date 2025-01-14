@@ -273,9 +273,9 @@ def update_dataframe_with_coverage_results(
                 results[f"{func_name}_all_average_f1s"] = json.dumps(f1_T.tolist())
 
                 cov_exclude_empty = all_sae_results[autoencoder_group_path][autoencoder_path][f"{func_name}_coverage_exclude_empty"]
-                results[f"{func_name}_coverage"] = cov_exclude_empty.item()
+                results[f"{func_name}_coverage_exclude_empty"] = cov_exclude_empty.item()
                 cov_include_empty = all_sae_results[autoencoder_group_path][autoencoder_path][f"{func_name}_coverage_include_empty"]
-                results[f"{func_name}_coverage"] = cov_include_empty.item()
+                results[f"{func_name}_coverage_include_empty"] = cov_include_empty.item()
 
                 for threshold in thresholds:
                     threshold_column, threshold_normalized_column = get_threshold_column_names(
