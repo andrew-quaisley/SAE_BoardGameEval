@@ -29,18 +29,23 @@ def best_f1_average(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch
 
     return f1_T
 
-def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config) -> torch.Tensor:
+def coverage(f1_TFRRC: torch.Tensor, config: chess_utils.Config, exclude_class=None) -> torch.Tensor:
     """Computes coverage from f1 scores as defined in paper (except that all positions that are empty
         have potentially been thrown out already, if the custom function is a "blank_mask" version)."""
     
-    #special case for othello so that I can keep best_f1_average giving the same (incorrect) results for comparison
+    if exclude_class:
+        classes = torch.arange(config.max_val - config.min_val + 1)
+        classes_to_keep = classes!=exclude_class
+        f1_TFRRC = f1_TFRRC[:,:,:,:, classes_to_keep]
+
+    """ #special case for othello so that I can keep best_f1_average giving the same (incorrect) results for comparison
     if "blank_mask" in config.custom_board_state_function.__name__:
         f1_TFRRC = f1_TFRRC[:,:,:,:, [0, 2]]
     elif config.one_hot_mask_idx is not None:
         #Throw away empty class
         classes = torch.arange(config.max_val - config.min_val + 1)
         classes_to_keep = classes!=config.one_hot_mask_idx 
-        f1_TFRRC = f1_TFRRC[:,:,:,:, classes_to_keep]
+        f1_TFRRC = f1_TFRRC[:,:,:,:, classes_to_keep] """
 
     f1_RRC = torch.amax(f1_TFRRC, dim=(0,1))
 
@@ -146,6 +151,8 @@ def check_df_if_othello(df: pd.DataFrame) -> bool:
     raise ValueError("Could not determine if this is an Othello dataframe")
 
 
+OTHELLO_EMPTY_CLASS = 1
+CHESS_EMPTY_CLASS = 6
 def calculate_all_sae_coverage(
     autoencoder_group_paths: list[str],
     df: pd.DataFrame,
@@ -218,8 +225,11 @@ def calculate_all_sae_coverage(
                 f1_TFRRC = f1_dict_TFRRC[func_name]
 
                 #compute coverage based on definition in paper - AQ
-                cov = coverage(f1_TFRRC, config)
-                sae_results[autoencoder_path][f"{func_name}_coverage"] = cov
+                empty_class = OTHELLO_EMPTY_CLASS #un-hard-code later
+                cov_exclude_empty_class = coverage(f1_TFRRC, config, exclude_class=empty_class)
+                sae_results[autoencoder_path][f"{func_name}_coverage_exclude_empty"] = cov_exclude_empty_class
+                cov_include_empty_class = coverage(f1_TFRRC, config, None)
+                sae_results[autoencoder_path][f"{func_name}_coverage_include_empty"] = cov_include_empty_class
 
                 average_f1_T = best_f1_average(f1_TFRRC, config)
                 sae_results[autoencoder_path][f"{func_name}_average_f1"] = average_f1_T
