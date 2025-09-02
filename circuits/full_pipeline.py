@@ -18,6 +18,7 @@ import circuits.utils as utils
 from collections import deque
 from joblib import Parallel, delayed
 
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
 def initialize_dataframe(custom_functions: list[Callable]) -> pd.DataFrame:
     constant_columns = [
@@ -212,7 +213,10 @@ def check_all_sae_groups(autoencoder_group_paths: list[str]) -> bool:
 def analyze_sae_groups(
     autoencoder_group_paths: list[str], csv_output_path: str, config: p_config.Config
 ):
-    RESOURCE_STACK = deque([f"cuda:{i}" for i in range(config.N_GPUS)])
+    if torch.cuda.is_available():
+        RESOURCE_STACK = deque([f"cuda:{i}" for i in range(config.N_GPUS)])
+    else:
+        RESOURCE_STACK = deque(["cpu"])
 
     if "huben" in autoencoder_group_paths[0]:
         huben = True
@@ -451,9 +455,12 @@ def analyze_sae_groups(
             RESOURCE_STACK.append(device)
             return df
 
-        dfs = Parallel(n_jobs=config.N_GPUS, require="sharedmem")(
-            delayed(full_eval_pipeline)(autoencoder_path) for autoencoder_path in folders
-        )
+        if torch.cuda.is_available():
+            dfs = Parallel(n_jobs=config.N_GPUS, require="sharedmem")(
+                delayed(full_eval_pipeline)(autoencoder_path) for autoencoder_path in folders
+            )
+        else:
+            dfs = [full_eval_pipeline(autoencoder_path) for autoencoder_path in folders]
 
         pd.concat(dfs, axis=0, ignore_index=True).to_csv(autoencoder_group_path + "results.csv")
 
@@ -468,7 +475,10 @@ def analyze_sae_groups(
     results_filename_filter = str(config.eval_sae_n_inputs) + "_"
     f1_analysis_thresholds = config.f1_analysis_thresholds.tolist()
 
-    RESOURCE_STACK = deque([f"cuda:{i}" for i in range(config.N_GPUS)])
+    if torch.cuda.is_available():
+        RESOURCE_STACK = deque([f"cuda:{i}" for i in range(config.N_GPUS)])
+    else:
+        RESOURCE_STACK = deque(["cpu"])
 
     device = RESOURCE_STACK.pop()
 
@@ -549,8 +559,8 @@ chess_output_path = "autoencoders/chess-trained_model-layer_5-2024-05-23/results
 # ]
 
 all_groups = [#(chess_group_paths, chess_output_path),
-              #(othello_group_paths, othello_output_path),
-              (huben_othello_group_paths, huben_othello_output_path)]
+              (othello_group_paths, othello_output_path)]
+              #(huben_othello_group_paths, huben_othello_output_path)]
 
 """ othello_test_path = ["autoencoders/testing_othello/"]
 othello_test_output_path = "autoencoders/testing_othello/results.csv"
@@ -572,12 +582,18 @@ if __name__ == "__main__":
     # To edit the main_config, you can do things like:
     # main_config.eval_sae_n_inputs = 1000
     # main_config.N_GPUS = 1
+    #For testing purposes:
+    main_config.eval_sae_n_inputs = 1
+    main_config.eval_results_n_inputs = 1
+    main_config.batch_size = 1
+    main_config.board_reconstruction_n_inputs = 1
+    main_config.precompute = False
 
     results_filename_filter = str(main_config.eval_sae_n_inputs) + "_"
     f1_analysis_thresholds = main_config.f1_analysis_thresholds.tolist()
     for group_path, output_path in all_groups:
         analyze_sae_groups(group_path, output_path, main_config)
-        f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, "cuda:0", f1_analysis_thresholds)
+        #f1_analysis.add_coverage_to_df(group_path, output_path, results_filename_filter, device, f1_analysis_thresholds)
 
     output_path = all_groups[0][1]
     f1_output_path = output_path.replace("results.csv", "f1_results.csv")

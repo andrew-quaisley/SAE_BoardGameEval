@@ -105,7 +105,7 @@ def get_F1_per_feature(
     assert torch.all(all_counts_TF == all_counts_TF[0].expand_as(all_counts_TF))
 
     true_positives_TFRRC = on_counts_TFRRC
-    false_positives_TFRRC = all_ons_TFRRC - true_positives_TFRRC
+    false_positives_TFRRC = all_ons_TFRRC - true_positives_TFRRC 
     false_negatives_TFRRC = total_counts_TFRRC - true_positives_TFRRC
     # true_negatives_TFRRC =  # TODO
 
@@ -118,9 +118,11 @@ def get_F1_per_feature(
         true_positives_TFRRC + false_positives_TFRRC + epsilon
     )
     recall_TFRRC = true_positives_TFRRC / (true_positives_TFRRC + false_negatives_TFRRC + epsilon)
-    f1_TFRRC = 2 * (precision_TFRRC * recall_TFRRC) / (precision_TFRRC + recall_TFRRC + epsilon)
-    empty_f1_sum = f1_TFRRC[:,:,:,:,1].sum()
-    print(f"Sum of f1s for empty class: {empty_f1_sum}.")
+    #f1_TFRRC = 2 * (precision_TFRRC * recall_TFRRC) / (precision_TFRRC + recall_TFRRC + epsilon)
+    
+    #our way of computing f1 scores
+    f1_TFRRC = (2*true_positives_TFRRC)/(2*true_positives_TFRRC+false_negatives_TFRRC+false_positives_TFRRC)
+    f1_TFRRC = torch.where((true_positives_TFRRC+false_negatives_TFRRC+false_positives_TFRRC)==0, 0, f1_TFRRC)
 
     assert torch.all(precision_TFRRC >= 0)
     assert torch.all(precision_TFRRC <= 1)

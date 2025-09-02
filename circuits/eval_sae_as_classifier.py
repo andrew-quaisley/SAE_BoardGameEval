@@ -437,7 +437,9 @@ def aggregate_statistics(
         n_inputs,
     )
 
-    firing_rate_n_inputs = min(int(n_inputs * 0.5), 1000) * ae_bundle.context_length
+    #changed for testing purposes
+    #firing_rate_n_inputs = min(int(n_inputs * 0.5), 1000) * ae_bundle.context_length
+    firing_rate_n_inputs = ae_bundle.context_length
 
     torch.manual_seed(0)  # For reproducibility
     alive_features_f, max_activations_f = get_firing_features(
@@ -484,6 +486,8 @@ def aggregate_statistics(
         )
 
         encoded_inputs_BL = torch.tensor(encoded_inputs_bL[start:end]).to(device)
+        #for testing purposes
+        assert encoded_inputs_BL.tolist() == [[20, 19, 27, 21, 10, 39, 14, 32, 26, 18, 40, 13, 28, 15,  7, 42,  9, 41, 33, 34, 22, 17, 11,  2, 46,  6,  8, 24, 51,  1, 23, 47, 50, 60, 43, 16, 52, 59, 30, 29, 57, 53, 48, 12, 45, 56,  5, 58, 37, 35,  3,  4, 49, 55, 54, 44, 36, 38, 25]]
         all_activations_fBL, tokens = collect_activations_batch(
             ae_bundle, encoded_inputs_BL, alive_features_f
         )

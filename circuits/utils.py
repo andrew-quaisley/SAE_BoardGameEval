@@ -166,6 +166,9 @@ def get_ae_bundle(
 
         with open(autoencoder_config_path, "r") as f:
             config = json.load(f)
+        if not torch.cuda.is_available():
+            config["trainer"]["device"] = "cpu"
+            config["buffer"]["device"] = "cpu"
 
         if "dict_class" in config["trainer"]:
             if config["trainer"]["dict_class"] == "Identity":
